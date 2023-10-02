@@ -19,21 +19,9 @@ object RandomGeneratorFromString extends RandomGeneratorFromStringBase with Seri
   }
 }
 
-class GaussianRandomGeneratorFromString(
-    val mu: Double = 0.3,
-    val sd: Double = 0.1
-) extends RandomGeneratorFromStringBase
-    with Serializable {
-  def generateRandom(docId: String): Double = {
-    val seed = NgramHashExtractor.hashString(docId)
-    val rng = new Random(seed)
-    rng.nextGaussian() * mu + sd
-  }
-}
-
 class DeduplicateDocuments(
     val baseNumFreq: Int = 10,
-    val randomGenerator: RandomGeneratorFromStringBase = new GaussianRandomGeneratorFromString
+    val randomGenerator: RandomGeneratorFromStringBase = RandomGeneratorFromString
 ) extends DocFilter {
 
   def computeNearDuplicateTextRatio(doc: Document): Float = {
@@ -60,7 +48,7 @@ class DeduplicateDocuments(
     val nearDuplicateTextRatio = computeNearDuplicateTextRatio(doc)
     val thresholdProb = randomGenerator.generateRandom(doc.docId)
 
-    nearDuplicateTextRatio >= thresholdProb
+    nearDuplicateTextRatio <= thresholdProb
   }
 
   override def checkDocument(doc: Document): Document = {
