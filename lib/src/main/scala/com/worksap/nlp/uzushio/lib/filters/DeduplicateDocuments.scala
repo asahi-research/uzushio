@@ -48,7 +48,7 @@ class DeduplicateDocuments(
     val nearDuplicateTextRatio = computeNearDuplicateTextRatio(doc)
     val thresholdProb = randomGenerator.generateRandom(doc.docId)
 
-    nearDuplicateTextRatio <= thresholdProb
+    nearDuplicateTextRatio >= thresholdProb
   }
 
   override def checkDocument(doc: Document): Document = {
